@@ -3,7 +3,7 @@ import api from './api';
 import type {
     Employee,
     EmployeeApiResponse,
-} from '../types/employee';
+} from '../types/Employee';
 
 export const getEmployees = async (): Promise<Employee[]> => {
     const response = await api.get<EmployeeApiResponse>(
