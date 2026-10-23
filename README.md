@@ -1,97 +1,107 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Employee Management App
 
-# Getting Started
+A React Native application for managing employee information, built with TypeScript and Axios. This project is being developed incrementally to practise real-world mobile app development, API integration, and maintainable code organization.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 🚀 Technologies
 
-## Step 1: Start Metro
+- **React Native** — Mobile application development
+- **TypeScript** — Type safety and maintainable code
+- **Axios** — HTTP requests and API communication
+- **DummyJSON** — Fake REST API for development and practice
+- **Git & GitHub** — Version control and source code management
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## ✨ Planned Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- [ ] Display a list of employees
+- [ ] View individual employee details
+- [ ] Add a new employee
+- [ ] Edit employee information
+- [ ] Delete an employee
+- [ ] Search and filter employees
+- [ ] Handle loading, empty, and error states
 
-```sh
-# Using npm
-npm start
+## 📁 Project Structure
 
-# OR using Yarn
-yarn start
+```text
+EmployeeApp/
+├── src/
+│   ├── services/
+│   │   ├── api.ts
+│   │   └── employeeServices.tsx
+│   └── types/
+│       └── employee.ts
+├── App.tsx
+├── package.json
+└── README.md
 ```
 
-## Step 2: Build and run your app
+The project structure will evolve as additional screens, reusable components, navigation, and utilities are implemented.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## ⚙️ Getting Started
 
-### Android
+### Prerequisites
 
-```sh
-# Using npm
-npm run android
+- Node.js and npm
+- React Native development environment
+- Android Studio and an Android emulator, or a compatible Android device
 
-# OR using Yarn
-yarn android
-```
+### Installation
 
-### iOS
+1. Clone the repository:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+   ```bash
+   git clone https://github.com/piyush-kumar-07/Employee-App.git
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+2. Navigate to the project directory:
 
-```sh
-bundle install
-```
+   ```bash
+   cd Employee-App
+   ```
 
-Then, and every time you update your native dependencies, run:
+3. Install dependencies:
 
-```sh
-bundle exec pod install
-```
+   ```bash
+   npm install
+   ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+4. Start Metro:
 
-```sh
-# Using npm
-npm run ios
+   ```bash
+   npm start
+   ```
 
-# OR using Yarn
-yarn ios
-```
+5. In a separate terminal, run the Android application:
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+   ```bash
+   npm run android
+   ```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🌐 API Integration
 
-## Step 3: Modify your app
+The application uses [DummyJSON](https://dummyjson.com/users) as a fake REST API for employee data.
 
-Now that you have successfully run the app, let's make changes!
+The API client is configured in `src/services/api.ts`, while employee-related API requests are organized in `src/services/employeeServices.tsx`.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+The current implementation includes functions for retrieving the employee list and an individual employee.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+**Note:** DummyJSON simulates create, update, and delete operations. These changes are not permanently saved on its server.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## 🧠 Learning Objectives
 
-## Congratulations! :tada:
+- Build a React Native application with TypeScript
+- Organize API communication into a service layer
+- Work with asynchronous requests using Axios
+- Manage application state and API errors
+- Implement CRUD operations
+- Practise Git workflows and maintainable project architecture
 
-You've successfully run and modified your React Native App. :partying_face:
+## 📌 Project Status
 
-### Now what?
+**In development.** Features will be implemented and documented as the project progresses.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## 👤 Author
 
-# Troubleshooting
+**Piyush Kumar**
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+GitHub: [piyush-kumar-07](https://github.com/piyush-kumar-07)
