@@ -4,17 +4,11 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
+import EmployeeListScreen from './src/screens/employees/EmployeeListScreen';
 function App() {
-  return (
-    <View style={Styles.container}>
-      <Text style={Styles.heading}>
-        Employee Management
-      </Text>
-      <Text style={Styles.subtitle}>
-        Manage your employee in one place .
-      </Text>
-    </View>
-  )
+  return <EmployeeListScreen />;
+
+
 }
 const Styles = StyleSheet.create({
   container: {
