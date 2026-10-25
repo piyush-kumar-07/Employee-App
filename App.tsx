@@ -20,7 +20,7 @@ const Styles = StyleSheet.create({
   heading: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: "#172033",
+    color: "#225fe3",
 
   },
   subtitle: {
