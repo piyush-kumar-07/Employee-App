@@ -18,6 +18,7 @@ function EmployeeListScreen() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
 
     const filteredEmployees = employees.filter((employee) => {
         const query = search.trim().toLowerCase();
