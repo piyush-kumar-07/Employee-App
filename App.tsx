@@ -30,3 +30,15 @@ const Styles = StyleSheet.create({
   },
 });
 export default App;
+
+
+
+
+
+
+
+
+
+
+// {npx tsc --noEmit}  used to check for type error 
+//  withput actually compiling 

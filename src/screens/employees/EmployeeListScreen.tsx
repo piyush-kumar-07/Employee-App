@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Text,
     View,
+    TextInput,
 } from 'react-native';
 import axios from 'axios';
 
@@ -16,6 +17,22 @@ function EmployeeListScreen() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
+
+    const filteredEmployees = employees.filter((employee) => {
+        const query = search.trim().toLowerCase();
+
+        const fullName =
+            `${employee.firstName} ${employee.lastName}`.toLowerCase();
+
+        return (
+            fullName.includes(query) ||
+            employee.email.toLowerCase().includes(query) ||
+            employee.company.department.toLowerCase().includes(query)
+
+        );
+
+    });
 
     useEffect(() => {
         const loadEmployees = async () => {
@@ -64,11 +81,19 @@ function EmployeeListScreen() {
         <View style={styles.container}>
             <Text style={styles.heading}>Employees</Text>
             <Text style={styles.subtitle}>
-                {employees.length} employees found
+                {filteredEmployees.length}  of {employees.length}employees found
             </Text>
 
+            <TextInput
+                style={styles.searchInput}
+                placeholder='Search name, email, departmen...'
+                value={search}
+                onChangeText={setSearch}
+                autoCapitalize="none"
+                clearButtonMode='while-editing' />
+
             <FlatList
-                data={employees}
+                data={filteredEmployees}
                 keyExtractor={(item) => String(item.id)}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
@@ -85,7 +110,11 @@ function EmployeeListScreen() {
                     </View>
                 )}
                 ListEmptyComponent={
-                    <Text style={styles.message}>No employees found.</Text>
+                    <Text style={styles.message}>
+                        {search.trim()
+                            ? 'No matching employees found.'
+                            : 'No employees found'}
+                    </Text>
                 }
             />
         </View>
@@ -109,6 +138,17 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#64748B',
         fontSize: 14,
+    },
+    searchInput: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        borderColor: '#CBD5E1',
+        borderWidth: 1,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        fontSize: 15,
+        marginBottom: 16,
+        color: '#172033'
     },
     list: {
         paddingBottom: 24,
