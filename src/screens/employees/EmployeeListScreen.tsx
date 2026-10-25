@@ -104,18 +104,18 @@ function EmployeeListScreen() {
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search name, email, department..."
+                    placeholderTextColor="#94A3B8" // ✅ Forces placeholder to be grey in dark mode
                     value={search}
                     onChangeText={setSearch}
                     autoCapitalize="none"
                     autoCorrect={false}
-                /* remove clearButtonMode — we handle it ourselves */
                 />
 
                 {search.length > 0 && (
                     <Pressable
                         style={styles.clearButton}
                         onPress={() => setSearch('')}
-                        hitSlop={8}            /* bigger touch area without growing layout */
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // ✅ Makes it easier to tap
                         accessibilityLabel="Clear search"
                     >
                         <Text style={styles.clearButtonText}>×</Text>
@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
         color: '#64748B',
         fontSize: 14,
     },
-    // ─── Search bar ──────────────────────────────────────
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -181,14 +180,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingHorizontal: 12,
         marginBottom: 16,
-        height: 50, // ✅ FIX: Added a fixed height so the bar doesn't collapse
+        height: 50, // ✅ Forces the height
     },
     searchInput: {
-        flex: 1, // This now only makes it take up the available WIDTH
-        height: '100%', // ✅ FIX: Ensures the input fills the 50px container
+        flex: 1,
+        height: '100%',
         fontSize: 15,
-        color: '#172033',
-        paddingVertical: 0, // Removes weird Android default padding
+        color: '#172033', // ✅ Forces typed text to be dark
+        paddingVertical: 0,
     },
     clearButton: {
         width: 28,
@@ -200,13 +199,12 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     clearButtonText: {
-        fontSize: 20,
-        lineHeight: 22,
+        fontSize: 22,
+        lineHeight: 24,
         color: '#475569',
-        fontWeight: '700',
-        marginTop: -2, // Slight adjustment to perfectly center the ×
+        fontWeight: 'bold',
+        marginTop: -2,
     },
-
 
     list: {
         paddingBottom: 24,
