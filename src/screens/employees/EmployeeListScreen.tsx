@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
@@ -7,6 +6,7 @@ import {
     Text,
     View,
     TextInput,
+    Pressable,
 } from 'react-native';
 import axios from 'axios';
 
@@ -20,47 +20,51 @@ function EmployeeListScreen() {
     const [search, setSearch] = useState('');
     const [refreshing, setRefreshing] = useState(false);
 
-    const filteredEmployees = employees.filter((employee) => {
-        const query = search.trim().toLowerCase();
 
+    const loadEmployees = useCallback(async (isRefresh = false) => {
+        try {
+            setError('');
+
+            if (isRefresh) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
+
+            const data = await getEmployees();
+            setEmployees(data);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                console.log('Employee API error:', err.message);
+            }
+            setError('Unable to load employees. Please try again.');
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadEmployees();
+    }, [loadEmployees]);
+
+
+    const query = search.trim().toLowerCase();
+
+    const filteredEmployees = employees.filter((employee) => {
         const fullName =
-            `${employee.firstName} ${employee.lastName}`.toLowerCase();
+            `${employee.firstName ?? ''} ${employee.lastName ?? ''}`.toLowerCase();
+        const email = (employee.email ?? '').toLowerCase();
+        const department = (employee.company?.department ?? '').toLowerCase();
 
         return (
             fullName.includes(query) ||
-            employee.email.toLowerCase().includes(query) ||
-            employee.company.department.toLowerCase().includes(query)
-
+            email.includes(query) ||
+            department.includes(query)
         );
-
     });
 
-    useEffect(() => {
-        const loadEmployees = async () => {
-            try {
-                setError('');
-
-                const data = await getEmployees();
-                setEmployees(data);
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    console.log('Status:', error.response?.status);
-                    console.log('Response:', error.response?.data);
-                    console.log('Message:', error.message);
-                    console.log('URL:', error.config?.url);
-                } else {
-                    console.log('Unexpected error:', error);
-                }
-
-                setError('Unable to load employees. Please try again.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadEmployees();
-    }, []);
-
+    // ── Loading screen ───────────────────────────────────────────
     if (loading) {
         return (
             <View style={styles.center}>
@@ -70,32 +74,59 @@ function EmployeeListScreen() {
         );
     }
 
+    // ── Error screen ─────────────────────────────────────────────
     if (error) {
         return (
             <View style={styles.center}>
                 <Text style={styles.error}>{error}</Text>
+
+                <Pressable
+                    style={styles.retryButton}
+                    onPress={() => loadEmployees()}
+                >
+                    <Text style={styles.retryText}>Try Again</Text>
+                </Pressable>
             </View>
         );
     }
 
+    // ── Success screen ───────────────────────────────────────────
     return (
         <View style={styles.container}>
             <Text style={styles.heading}>Employees</Text>
+
+
             <Text style={styles.subtitle}>
-                {filteredEmployees.length}  of {employees.length}employees found
+                {filteredEmployees.length} of {employees.length} employees found
             </Text>
 
-            <TextInput
-                style={styles.searchInput}
-                placeholder='Search name, email, departmen...'
-                value={search}
-                onChangeText={setSearch}
-                autoCapitalize="none"
-                clearButtonMode='while-editing' />
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search name, email, department..."
+                    value={search}
+                    onChangeText={setSearch}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                /* remove clearButtonMode — we handle it ourselves */
+                />
 
+                {search.length > 0 && (
+                    <Pressable
+                        style={styles.clearButton}
+                        onPress={() => setSearch('')}
+                        hitSlop={8}            /* bigger touch area without growing layout */
+                        accessibilityLabel="Clear search"
+                    >
+                        <Text style={styles.clearButtonText}>×</Text>
+                    </Pressable>
+                )}
+            </View>
             <FlatList
                 data={filteredEmployees}
                 keyExtractor={(item) => String(item.id)}
+                refreshing={refreshing}
+                onRefresh={() => loadEmployees(true)}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
@@ -104,7 +135,7 @@ function EmployeeListScreen() {
                         </Text>
 
                         <Text style={styles.detail}>
-                            {item.company.department}
+                            {item.company?.department ?? '—'}
                         </Text>
 
                         <Text style={styles.email}>{item.email}</Text>
@@ -140,17 +171,43 @@ const styles = StyleSheet.create({
         color: '#64748B',
         fontSize: 14,
     },
-    searchInput: {
+    // ─── Search bar ──────────────────────────────────────
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         borderColor: '#CBD5E1',
         borderWidth: 1,
         paddingHorizontal: 12,
-        paddingVertical: 12,
-        fontSize: 15,
         marginBottom: 16,
-        color: '#172033'
+        height: 50, // ✅ FIX: Added a fixed height so the bar doesn't collapse
     },
+    searchInput: {
+        flex: 1, // This now only makes it take up the available WIDTH
+        height: '100%', // ✅ FIX: Ensures the input fills the 50px container
+        fontSize: 15,
+        color: '#172033',
+        paddingVertical: 0, // Removes weird Android default padding
+    },
+    clearButton: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: '#E2E8F0',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 8,
+    },
+    clearButtonText: {
+        fontSize: 20,
+        lineHeight: 22,
+        color: '#475569',
+        fontWeight: '700',
+        marginTop: -2, // Slight adjustment to perfectly center the ×
+    },
+
+
     list: {
         paddingBottom: 24,
     },
@@ -190,6 +247,17 @@ const styles = StyleSheet.create({
     error: {
         color: '#DC2626',
         textAlign: 'center',
+    },
+    retryButton: {
+        marginTop: 16,
+        backgroundColor: '#2563EB',
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    retryText: {
+        color: '#FFFFFF',
+        fontWeight: '600',
     },
 });
 
