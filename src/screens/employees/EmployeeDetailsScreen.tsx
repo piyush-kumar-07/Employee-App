@@ -34,6 +34,9 @@ function EmployeeDetailsScreen({ route }: Props) {
                     {employee.firstName} {employee.lastName}
                 </Text>
 
+                <Text style={styles.label}>Employee ID</Text>
+                <Text style={styles.value}>{employee.id}</Text>
+
                 <Text style={styles.department}>
                     {employee.company.department}
                 </Text>
@@ -58,8 +61,6 @@ function EmployeeDetailsScreen({ route }: Props) {
                 <Text style={styles.label}>Job Title</Text>
                 <Text style={styles.value}>{employee.company?.title ?? 'Not provided'}</Text>
 
-                <Text style={styles.label}>Employee ID</Text>
-                <Text style={styles.value}>{employee.id}</Text>
             </View>
         </ScrollView>
     );
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#64748B',
         marginBottom: 5,
+        marginTop: 8,
     },
     value: {
         fontSize: 15,
