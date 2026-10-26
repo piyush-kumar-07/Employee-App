@@ -273,14 +273,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
-        borderRadius: 16,
+        borderRadius: 19,
         padding: 14,
         marginBottom: 12,
         borderWidth: 1,
         borderColor: '#E9EEF5',
     },
     cardPressed: {
-        opacity: 0.75,
+        opacity: .8,
     },
     avatar: {
         width: 48,
