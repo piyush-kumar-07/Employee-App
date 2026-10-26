@@ -6,7 +6,7 @@ export type Employee = {
     phone: string;
     company: {
         department: string;
-        post: string;
+        title: string;
     };
 };
 export type EmployeeApiResponse = {

@@ -13,8 +13,15 @@ import axios from 'axios';
 
 import type { Employee } from '../../types/employee';
 import { getEmployees } from '../../services/employeeServices';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/AppNavigator';
 
-function EmployeeListScreen() {
+type Props = NativeStackScreenProps<
+    RootStackParamList,
+    'EmployeeList'
+>;
+
+function EmployeeListScreen({ navigation }: Props) {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -149,9 +156,9 @@ function EmployeeListScreen() {
                                 styles.card,
                                 pressed && styles.cardPressed,
                             ]}
-                            onPress={() => {
-                                console.log('Selected employee:', item.id);
-                            }}
+                            onPress={() =>
+                                navigation.navigate('EmployeeDetails', { employee: item })
+                            }
                         >
                             <View style={styles.avatar}>
                                 <Text style={styles.avatarText}>{initials}</Text>

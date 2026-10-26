@@ -5,8 +5,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import EmployeeListScreen from './src/screens/employees/EmployeeListScreen';
+import AppNavigator from './src/navigation/AppNavigator';
 function App() {
-  return <EmployeeListScreen />;
+  return <AppNavigator />;
 
 
 }
