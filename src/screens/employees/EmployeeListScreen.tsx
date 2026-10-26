@@ -118,7 +118,7 @@ function EmployeeListScreen() {
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // ✅ Makes it easier to tap
                         accessibilityLabel="Clear search"
                     >
-                        <Text style={styles.clearButtonText}>×</Text>
+                        <Text style={styles.clearButtonText}>X</Text>
                     </Pressable>
                 )}
             </View>
