@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     },
     profile: {
         alignItems: 'center',
-        paddingVertical: 30,
-        paddingHorizontal: 20,
+        paddingVertical: 28,
+        paddingHorizontal: 10,
     },
     avatar: {
         width: 84,
