@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
+    Pressable,
     StyleSheet,
     Text,
-    View,
     TextInput,
-    Pressable,
+    View,
 } from 'react-native';
+
 import axios from 'axios';
 
 import type { Employee } from '../../types/employee';
@@ -16,10 +17,9 @@ import { getEmployees } from '../../services/employeeServices';
 function EmployeeListScreen() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
-    const [refreshing, setRefreshing] = useState(false);
-
 
     const loadEmployees = useCallback(async (isRefresh = false) => {
         try {
@@ -48,7 +48,6 @@ function EmployeeListScreen() {
         loadEmployees();
     }, [loadEmployees]);
 
-
     const query = search.trim().toLowerCase();
 
     const filteredEmployees = employees.filter((employee) => {
@@ -69,7 +68,7 @@ function EmployeeListScreen() {
         return (
             <View style={styles.center}>
                 <ActivityIndicator size="large" color="#2563EB" />
-                <Text style={styles.message}>Loading employees...</Text>
+                <Text style={styles.muted}>Loading employees...</Text>
             </View>
         );
     }
@@ -79,7 +78,6 @@ function EmployeeListScreen() {
         return (
             <View style={styles.center}>
                 <Text style={styles.error}>{error}</Text>
-
                 <Pressable
                     style={styles.retryButton}
                     onPress={() => loadEmployees()}
@@ -93,60 +91,95 @@ function EmployeeListScreen() {
     // ── Success screen ───────────────────────────────────────────
     return (
         <View style={styles.container}>
-            <Text style={styles.heading}>Employees</Text>
+            <View style={styles.header}>
+                <View>
+                    <Text style={styles.head}>EMPLOYEE MANAGEMENT</Text>
+                    <Text style={styles.heading}>Employees</Text>
+                    <Text style={styles.subtitle}>
+                        {filteredEmployees.length} of {employees.length} employees
+                    </Text>
+                </View>
 
+                <View style={styles.headerBadge}>
+                    <Text style={styles.headerBadgeText}>
+                        {employees.length}
+                    </Text>
+                </View>
+            </View>
 
-            <Text style={styles.subtitle}>
-                {filteredEmployees.length} of {employees.length} employees found
-            </Text>
-
-            <View style={styles.searchContainer}>
+            <View style={styles.searchBox}>
+                <Text style={styles.searchIcon}>⌕</Text>
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Search name, email, department..."
-                    placeholderTextColor="#94A3B8" // ✅ Forces placeholder to be grey in dark mode
+                    placeholder="Search name, email, department"
+                    placeholderTextColor="#94A3B8"
                     value={search}
                     onChangeText={setSearch}
                     autoCapitalize="none"
                     autoCorrect={false}
                 />
 
+                {/* ✅ Custom clear button for Android & iOS */}
                 {search.length > 0 && (
                     <Pressable
                         style={styles.clearButton}
                         onPress={() => setSearch('')}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // ✅ Makes it easier to tap
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         accessibilityLabel="Clear search"
                     >
-                        <Text style={styles.clearButtonText}>X</Text>
+                        <Text style={styles.clearButtonText}>×</Text>
                     </Pressable>
                 )}
             </View>
+
             <FlatList
                 data={filteredEmployees}
                 keyExtractor={(item) => String(item.id)}
                 refreshing={refreshing}
                 onRefresh={() => loadEmployees(true)}
                 contentContainerStyle={styles.list}
-                renderItem={({ item }) => (
-                    <View style={styles.card}>
-                        <Text style={styles.name}>
-                            {item.firstName} {item.lastName}
-                        </Text>
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                    const initials =
+                        `${item.firstName?.charAt(0) ?? ''}${item.lastName?.charAt(0) ?? ''}`.toUpperCase();
 
-                        <Text style={styles.detail}>
-                            {item.company?.department ?? '—'}
-                        </Text>
+                    return (
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.card,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => {
+                                console.log('Selected employee:', item.id);
+                            }}
+                        >
+                            <View style={styles.avatar}>
+                                <Text style={styles.avatarText}>{initials}</Text>
+                            </View>
 
-                        <Text style={styles.email}>{item.email}</Text>
-                    </View>
-                )}
+                            <View style={styles.employeeInfo}>
+                                <Text style={styles.name}>
+                                    {item.firstName} {item.lastName}
+                                </Text>
+                                <Text style={styles.department}>
+                                    {item.company?.department ?? '—'}
+                                </Text>
+                                <Text style={styles.email} numberOfLines={1}>
+                                    {item.email}
+                                </Text>
+                            </View>
+
+                            <Text style={styles.chevron}>›</Text>
+                        </Pressable>
+                    );
+                }}
                 ListEmptyComponent={
-                    <Text style={styles.message}>
-                        {search.trim()
-                            ? 'No matching employees found.'
-                            : 'No employees found'}
-                    </Text>
+                    <View style={styles.empty}>
+                        <Text style={styles.emptyTitle}>No employees found</Text>
+                        <Text style={styles.muted}>
+                            Try another name, email, or department.
+                        </Text>
+                    </View>
                 }
             />
         </View>
@@ -157,8 +190,21 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F8FAFC',
-        paddingTop: 60,
+        paddingTop: 58,
         paddingHorizontal: 20,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 22,
+    },
+    head: {
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 1.1,
+        color: '#64748B',
+        marginBottom: 7,
     },
     heading: {
         fontSize: 28,
@@ -166,71 +212,112 @@ const styles = StyleSheet.create({
         color: '#172033',
     },
     subtitle: {
-        marginTop: 6,
-        marginBottom: 20,
+        marginTop: 5,
+        fontSize: 13,
         color: '#64748B',
-        fontSize: 14,
     },
-    searchContainer: {
+    headerBadge: {
+        width: 46,
+        height: 46,
+        borderRadius: 16,
+        backgroundColor: '#DBEAFE',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    headerBadgeText: {
+        color: '#1D4ED8',
+        fontSize: 17,
+        fontWeight: '700',
+    },
+    searchBox: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        borderColor: '#CBD5E1',
         borderWidth: 1,
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        height: 50, // ✅ Forces the height
+        borderColor: '#E2E8F0',
+        borderRadius: 14,
+        paddingHorizontal: 13,
+        marginBottom: 18,
+    },
+    searchIcon: {
+        color: '#64748B',
+        fontSize: 25,
+        marginRight: 9,
     },
     searchInput: {
         flex: 1,
-        height: '100%',
-        fontSize: 15,
-        color: '#172033', // ✅ Forces typed text to be dark
-        paddingVertical: 0,
+        minHeight: 49,
+        fontSize: 14,
+        color: '#172033',
     },
     clearButton: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
         backgroundColor: '#E2E8F0',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 8,
     },
     clearButtonText: {
-        fontSize: 22,
-        lineHeight: 24,
+        fontSize: 18,
+        lineHeight: 20,
         color: '#475569',
-        fontWeight: 'bold',
+        fontWeight: '700',
         marginTop: -2,
     },
-
     list: {
-        paddingBottom: 24,
+        paddingBottom: 8,
     },
     card: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 16,
+        padding: 14,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
+        borderColor: '#E9EEF5',
+    },
+    cardPressed: {
+        opacity: 0.75,
+    },
+    avatar: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#DBEAFE',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    avatarText: {
+        color: '#1D4ED8',
+        fontWeight: '700',
+        fontSize: 15,
+    },
+    employeeInfo: {
+        flex: 1,
     },
     name: {
-        fontSize: 17,
-        fontWeight: '600',
         color: '#172033',
+        fontWeight: '600',
+        fontSize: 15,
     },
-    detail: {
-        marginTop: 6,
-        fontSize: 14,
+    department: {
         color: '#2563EB',
+        fontSize: 12,
+        marginTop: 4,
     },
     email: {
-        marginTop: 5,
-        fontSize: 13,
         color: '#64748B',
+        fontSize: 12,
+        marginTop: 4,
+    },
+    chevron: {
+        color: '#94A3B8',
+        fontSize: 26,
+        marginLeft: 8,
     },
     center: {
         flex: 1,
@@ -238,12 +325,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 24,
     },
-    message: {
-        marginTop: 12,
+    muted: {
         color: '#64748B',
+        marginTop: 10,
+        fontSize: 13,
+        textAlign: 'center',
     },
     error: {
-        color: '#DC2626',
+        color: '#2563EB',
         textAlign: 'center',
     },
     retryButton: {
@@ -251,11 +340,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#2563EB',
         paddingHorizontal: 24,
         paddingVertical: 12,
-        borderRadius: 8,
+        borderRadius: 10,
     },
     retryText: {
         color: '#FFFFFF',
         fontWeight: '600',
+    },
+    empty: {
+        alignItems: 'center',
+        paddingVertical: 45,
+    },
+    emptyTitle: {
+        color: '#172033',
+        fontWeight: '600',
+        fontSize: 16,
     },
 });
 
