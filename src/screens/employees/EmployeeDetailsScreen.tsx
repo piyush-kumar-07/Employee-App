@@ -53,10 +53,10 @@ function EmployeeDetailsScreen({ route }: Props) {
                 <Text style={styles.sectionTitle}>Work Information</Text>
 
                 <Text style={styles.label}>Department</Text>
-                <Text style={styles.value}>{employee.company.department}</Text>
+                <Text style={styles.value}>{employee.company?.department ?? '—'}</Text>
 
                 {/* <Text style={styles.label}>Job Title</Text>
-                <Text style={styles.value}>{employee.company.title}</Text> */}
+                <Text style={styles.value}>{employee.company?.title ?? '—'}</Text> */}
 
                 <Text style={styles.label}>Employee ID</Text>
                 <Text style={styles.value}>{employee.id}</Text>
