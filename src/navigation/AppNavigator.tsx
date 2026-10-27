@@ -4,12 +4,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import EmployeeListScreen from '../screens/employees/EmployeeListScreen';
 import EmployeeDetailsScreen from '../screens/employees/EmployeeDetailsScreen';
+import AddEmployeeScreen from '../screens/employees/AddEmployeeScreen';
 import type { Employee } from '../types/employee';
 
 // ✅ 1. Define the types for navigation
 export type RootStackParamList = {
     EmployeeList: undefined;
     EmployeeDetails: { employee: Employee };
+    AddEmployee: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,6 +41,11 @@ function AppNavigator() {
                     component={EmployeeDetailsScreen}
 
                     options={{ title: 'Employee Details' }}
+                />
+                <Stack.Screen
+                    name="AddEmployee"
+                    component={AddEmployeeScreen}
+                    options={{ title: 'Add Employee' }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

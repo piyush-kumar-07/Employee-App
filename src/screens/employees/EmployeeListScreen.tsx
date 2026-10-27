@@ -98,6 +98,12 @@ function EmployeeListScreen({ navigation }: Props) {
     // ── Success screen ───────────────────────────────────────────
     return (
         <View style={styles.container}>
+            <Pressable
+                style={styles.addButton}
+                onPress={() => navigation.navigate('AddEmployee')}
+            >
+                <Text style={styles.addButtonText}>+ Add Employee</Text>
+            </Pressable>
             <View style={styles.header}>
                 <View>
                     <Text style={styles.head}>EMPLOYEE MANAGEMENT</Text>
@@ -199,6 +205,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8FAFC',
         paddingTop: 18,
         paddingHorizontal: 11,
+    },
+    addButton: {
+        backgroundColor: '#2563EB',
+        borderRadius: 10,
+        paddingHorizontal: 14,
+        paddingVertical: 11,
+        alignSelf: 'flex-start',
+        marginBottom: 16,
+    },
+    addButtonText: {
+        color: '#FFFFFF',
+        fontWeight: '600',
+        fontSize: 13,
     },
     header: {
         flexDirection: 'row',
