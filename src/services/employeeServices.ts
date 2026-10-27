@@ -12,6 +12,31 @@ export const getEmployees = async (): Promise<Employee[]> => {
 
     return response.data.users;
 };
+export type CreateEmployeeInput = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    department: string;
+    title: string;
+};
+
+export const createEmployee = async (
+    employee: CreateEmployeeInput
+): Promise<Employee> => {
+    const response = await api.post<Employee>('/users/add', {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phone: employee.phone,
+        company: {
+            department: employee.department,
+            title: employee.title,
+        },
+    });
+
+    return response.data;
+};
 
 export const getEmployeeById = async (
     id: number
