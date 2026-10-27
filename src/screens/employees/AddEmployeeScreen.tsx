@@ -110,13 +110,17 @@ function AddEmployeeScreen() {
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+
+            behavior="padding"
+
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 80}
         >
             <ScrollView
                 contentContainerStyle={styles.content}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
+
                 <Text style={styles.heading}>Add Employee</Text>
                 <Text style={styles.subtitle}>
                     Enter the employee's information below.
@@ -159,6 +163,7 @@ const styles = StyleSheet.create({
     content: {
         padding: 20,
         paddingBottom: 36,
+        flexGrow: 1,
     },
     heading: {
         fontSize: 27,
