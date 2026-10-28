@@ -197,7 +197,12 @@ function EmployeeListScreen({ navigation, route }: Props) {
                             ]}
                             onPress={() =>
                                 navigation.navigate('EmployeeDetails', { employee: item })
+
                             }
+                            onLongPress={() =>
+                                navigation.navigate('EditEmployee', { employee: item })
+                            }
+                            delayLongPress={500}
                         >
                             <View style={styles.avatar}>
                                 <Text style={styles.avatarText}>{initials}</Text>
