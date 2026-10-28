@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -7,23 +7,45 @@ import {
     Pressable,
 } from 'react-native';
 
-import type { Employee } from '../../types/employee';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/AppNavigator';
 
-// ✅ FIX 1 & 2: Use NativeStackScreenProps to automatically get both 'route' AND 'navigation'
 type Props = NativeStackScreenProps<RootStackParamList, 'EmployeeDetails'>;
 
-// ✅ Extract both route and navigation from props
 function EmployeeDetailsScreen({ route, navigation }: Props) {
     const { employee } = route.params;
+    const [menuVisible, setMenuVisible] = useState(false);
 
-    // ✅ FIX 3: Added safe fallbacks so it doesn't crash if a name is missing
     const initials =
         `${employee.firstName?.charAt(0) ?? ''}${employee.lastName?.charAt(0) ?? ''}`.toUpperCase();
 
     return (
         <ScrollView style={styles.container}>
+
+            {/* ✅ The menu is now safely inside the scroll view */}
+            <View style={styles.menuContainer}>
+                <Pressable
+                    style={styles.menuButton}
+                    onPress={() => setMenuVisible(current => !current)}
+                >
+                    <Text style={styles.menuDots}>⋮</Text>
+                </Pressable>
+
+                {menuVisible && (
+                    <View style={styles.menuDropdown}>
+                        <Pressable
+                            style={styles.menuItem}
+                            onPress={() => {
+                                setMenuVisible(false);
+                                navigation.navigate('EditEmployee', { employee });
+                            }}
+                        >
+                            <Text style={styles.menuItemText}>Edit Employee</Text>
+                        </Pressable>
+                    </View>
+                )}
+            </View>
+
             <View style={styles.profile}>
                 <View style={styles.avatar}>
                     <Text style={styles.initials}>{initials || '?'}</Text>
@@ -43,35 +65,21 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
 
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Contact Information</Text>
-
                 <Text style={styles.label}>Email</Text>
                 <Text style={styles.value}>{employee.email}</Text>
-
                 <Text style={styles.label}>Phone</Text>
                 <Text style={styles.value}>{employee.phone}</Text>
             </View>
 
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Work Information</Text>
-
                 <Text style={styles.label}>Department</Text>
                 <Text style={styles.value}>{employee.company?.department ?? '—'}</Text>
-
                 <Text style={styles.label}>Job Title</Text>
                 <Text style={styles.value}>{employee.company?.title ?? 'Not provided'}</Text>
             </View>
 
-            <Pressable
-                style={({ pressed }) => [
-                    styles.editButton,
-                    pressed && { opacity: 0.8 } // Added a nice press effect
-                ]}
-                onPress={() =>
-                    navigation.navigate('EditEmployee', { employee })
-                }
-            >
-                <Text style={styles.editButtonText}>Edit Employee</Text>
-            </Pressable>
+            {/* ✅ Redundant button removed. The dropdown handles Edit now. */}
         </ScrollView>
     );
 }
@@ -80,6 +88,51 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F8FAFC',
+    },
+    menuContainer: {
+        alignItems: 'flex-end',
+        marginHorizontal: 20,
+        marginTop: 10,
+        zIndex: 10, // ✅ FIX: Bumped zIndex so it stays above other elements
+    },
+    menuButton: {
+        width: 42,
+        height: 42,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    menuDots: {
+        fontSize: 28,
+        lineHeight: 32,
+        color: '#172033',
+    },
+    menuDropdown: {
+        position: 'absolute',
+        top: 46,
+        right: 0,
+        minWidth: 160,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        elevation: 5,
+        shadowColor: '#000000',
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 3 },
+    },
+    menuItem: {
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+    },
+    menuItemText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#172033',
     },
     profile: {
         alignItems: 'center',
@@ -135,20 +188,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#172033',
         marginBottom: 16,
-    },
-    editButton: {
-        backgroundColor: '#2563EB',
-        marginHorizontal: 20,
-        marginTop: 4,
-        marginBottom: 28,
-        paddingVertical: 15,
-        borderRadius: 12,
-        alignItems: 'center',
-    },
-    editButtonText: {
-        color: '#FFFFFF',
-        fontSize: 15,
-        fontWeight: '700',
     },
 });
 
