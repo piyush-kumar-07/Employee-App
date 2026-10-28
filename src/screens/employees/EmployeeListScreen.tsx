@@ -21,7 +21,7 @@ type Props = NativeStackScreenProps<
     'EmployeeList'
 >;
 
-function EmployeeListScreen({ navigation }: Props) {
+function EmployeeListScreen({ navigation, route }: Props) {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -54,6 +54,30 @@ function EmployeeListScreen({ navigation }: Props) {
     useEffect(() => {
         loadEmployees();
     }, [loadEmployees]);
+
+
+    useEffect(() => {
+        const newEmployee = route.params?.newEmployee;
+
+        if (!newEmployee) {
+            return;
+        }
+
+        setEmployees(current => {
+            const alreadyExists = current.some(
+                employee => employee.id === newEmployee.id
+            );
+
+            if (alreadyExists) {
+                return current;
+            }
+
+            return [newEmployee, ...current];
+        });
+
+        setSearch('');
+        navigation.setParams({ newEmployee: undefined });
+    }, [route.params?.newEmployee, navigation]);
 
     const query = search.trim().toLowerCase();
 

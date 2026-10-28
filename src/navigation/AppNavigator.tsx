@@ -9,7 +9,7 @@ import type { Employee } from '../types/employee';
 
 // ✅ 1. Define the types for navigation
 export type RootStackParamList = {
-    EmployeeList: undefined;
+    EmployeeList: { newEmployee?: Employee } | undefined;
     EmployeeDetails: { employee: Employee };
     AddEmployee: undefined;
 };

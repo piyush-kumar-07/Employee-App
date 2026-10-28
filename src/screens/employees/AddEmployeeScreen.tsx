@@ -13,10 +13,15 @@ import {
     View,
 } from 'react-native';
 
+type Props = NativeStackScreenProps<
+    RootStackParamList,
+    'AddEmployee'>;
+
 import { createEmployee } from '../../services/employeeServices';
 import type { CreateEmployeeInput } from '../../services/employeeServices';
-
-function AddEmployeeScreen() {
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/AppNavigator';
+function AddEmployeeScreen({ navigation }: Props) {
     const [form, setForm] = useState<CreateEmployeeInput>({
         firstName: '',
         lastName: '',
@@ -37,6 +42,7 @@ function AddEmployeeScreen() {
             [field]: value,
         }));
     };
+
 
     const handleSubmit = async () => {
         const { firstName, lastName, email, phone, department, title } = form;
@@ -70,25 +76,13 @@ function AddEmployeeScreen() {
                 department: department.trim(),
                 title: title.trim(),
             });
-            Alert.alert(
-                'Success',
-                `Created employee: ${created.firstName} ${created.lastName}`,
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => setForm({
-                            firstName: '',
-                            lastName: '',
-                            email: '',
-                            phone: '',
-                            department: '',
-                            title: '',
-                        })
-                    }
-                ]
-            );
+
+            navigation.navigate('EmployeeList', {
+                newEmployee: created,
+            });
         } catch (error) {
             console.log('Create employee error:', error);
+
             Alert.alert(
                 'Request failed',
                 'Unable to create the employee. Please try again.',
