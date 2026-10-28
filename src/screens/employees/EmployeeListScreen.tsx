@@ -39,7 +39,16 @@ function EmployeeListScreen({ navigation, route }: Props) {
             }
 
             const data = await getEmployees();
-            setEmployees(data);
+
+            setEmployees(currentEmployees => {
+                const apiIds = new Set(data.map(employee => employee.id));
+
+                const locallyAddedEmployees = currentEmployees.filter(
+                    employee => !apiIds.has(employee.id),
+                );
+
+                return [...locallyAddedEmployees, ...data];
+            });
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 console.log('Employee API error:', err.message);
@@ -63,19 +72,19 @@ function EmployeeListScreen({ navigation, route }: Props) {
             return;
         }
 
-        setEmployees(current => {
-            const alreadyExists = current.some(
+        setEmployees(currentEmployees => {
+            const alreadyExists = currentEmployees.some(
                 employee => employee.id === newEmployee.id
             );
 
             if (alreadyExists) {
-                return current;
+                return currentEmployees;
             }
 
-            return [newEmployee, ...current];
+            return [newEmployee, ...currentEmployees];
         });
 
-        setSearch('');
+
         navigation.setParams({ newEmployee: undefined });
     }, [route.params?.newEmployee, navigation]);
 
