@@ -70,10 +70,22 @@ function AddEmployeeScreen() {
                 department: department.trim(),
                 title: title.trim(),
             });
-
             Alert.alert(
                 'Success',
                 `Created employee: ${created.firstName} ${created.lastName}`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => setForm({
+                            firstName: '',
+                            lastName: '',
+                            email: '',
+                            phone: '',
+                            department: '',
+                            title: '',
+                        })
+                    }
+                ]
             );
         } catch (error) {
             console.log('Create employee error:', error);
