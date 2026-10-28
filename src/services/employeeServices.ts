@@ -37,6 +37,24 @@ export const createEmployee = async (
 
     return response.data;
 };
+// for editing an existing record
+export const updateEmployee = async (
+    id: number,
+    employee: CreateEmployeeInput,
+): Promise<Employee> => {
+    const response = await api.put<Employee>(`/users/${id}`, {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phone: employee.phone,
+        company: {
+            department: employee.department,
+            title: employee.title,
+        },
+    });
+
+    return response.data;
+};
 
 export const getEmployeeById = async (
     id: number
