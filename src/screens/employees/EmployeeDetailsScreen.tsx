@@ -1,33 +1,32 @@
-
 import React from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
+    Pressable,
 } from 'react-native';
 
 import type { Employee } from '../../types/employee';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/AppNavigator';
 
-type Props = {
-    route: {
-        params: {
-            employee: Employee;
-        };
-    };
-};
+// ✅ FIX 1 & 2: Use NativeStackScreenProps to automatically get both 'route' AND 'navigation'
+type Props = NativeStackScreenProps<RootStackParamList, 'EmployeeDetails'>;
 
-function EmployeeDetailsScreen({ route }: Props) {
+// ✅ Extract both route and navigation from props
+function EmployeeDetailsScreen({ route, navigation }: Props) {
     const { employee } = route.params;
 
+    // ✅ FIX 3: Added safe fallbacks so it doesn't crash if a name is missing
     const initials =
-        `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
+        `${employee.firstName?.charAt(0) ?? ''}${employee.lastName?.charAt(0) ?? ''}`.toUpperCase();
 
     return (
         <ScrollView style={styles.container}>
             <View style={styles.profile}>
                 <View style={styles.avatar}>
-                    <Text style={styles.initials}>{initials}</Text>
+                    <Text style={styles.initials}>{initials || '?'}</Text>
                 </View>
 
                 <Text style={styles.name}>
@@ -38,7 +37,7 @@ function EmployeeDetailsScreen({ route }: Props) {
                 <Text style={styles.value}>{employee.id}</Text>
 
                 <Text style={styles.department}>
-                    {employee.company.department}
+                    {employee.company?.department ?? '—'}
                 </Text>
             </View>
 
@@ -60,8 +59,19 @@ function EmployeeDetailsScreen({ route }: Props) {
 
                 <Text style={styles.label}>Job Title</Text>
                 <Text style={styles.value}>{employee.company?.title ?? 'Not provided'}</Text>
-
             </View>
+
+            <Pressable
+                style={({ pressed }) => [
+                    styles.editButton,
+                    pressed && { opacity: 0.8 } // Added a nice press effect
+                ]}
+                onPress={() =>
+                    navigation.navigate('EditEmployee', { employee })
+                }
+            >
+                <Text style={styles.editButtonText}>Edit Employee</Text>
+            </Pressable>
         </ScrollView>
     );
 }
@@ -125,6 +135,20 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#172033',
         marginBottom: 16,
+    },
+    editButton: {
+        backgroundColor: '#2563EB',
+        marginHorizontal: 20,
+        marginTop: 4,
+        marginBottom: 28,
+        paddingVertical: 15,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    editButtonText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '700',
     },
 });
 
