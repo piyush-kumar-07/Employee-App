@@ -63,3 +63,7 @@ export const getEmployeeById = async (
 
     return response.data;
 };
+
+export const deleteEmployee = async (id: number): Promise<void> => {
+    await api.delete(`/users/${id}`);
+};
