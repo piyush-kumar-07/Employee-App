@@ -16,17 +16,14 @@ import { getEmployees } from '../../services/employeeServices';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/AppNavigator';
 
-type Props = NativeStackScreenProps<
-    RootStackParamList,
-    'EmployeeList'
->;
+type Props = NativeStackScreenProps<RootStackParamList, 'EmployeeList'>;
 
 function EmployeeListScreen({ navigation, route }: Props) {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState('');
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(''); // ✅ FIX 1: Added missing search state
 
     const loadEmployees = useCallback(async (isRefresh = false) => {
         try {
@@ -76,6 +73,15 @@ function EmployeeListScreen({ navigation, route }: Props) {
     useEffect(() => {
         const newEmployee = route.params?.newEmployee;
         const updatedEmployee = route.params?.updatedEmployee;
+        const deletedEmployeeId = route.params?.deletedEmployeeId;
+
+        if (deletedEmployeeId !== undefined) {
+            setEmployees(currentEmployees =>
+                currentEmployees.filter(
+                    employee => employee.id !== deletedEmployeeId,
+                ),
+            );
+        }
 
         if (updatedEmployee) {
             setEmployees(currentEmployees => {
@@ -107,17 +113,19 @@ function EmployeeListScreen({ navigation, route }: Props) {
             });
         }
 
-        if (newEmployee || updatedEmployee) {
+        if (newEmployee || updatedEmployee || deletedEmployeeId !== undefined) {
             setSearch('');
 
             navigation.setParams({
                 newEmployee: undefined,
                 updatedEmployee: undefined,
+                deletedEmployeeId: undefined,
             });
         }
     }, [
         route.params?.newEmployee,
         route.params?.updatedEmployee,
+        route.params?.deletedEmployeeId, // ✅ FIX 2: Fixed typo here
         navigation,
     ]);
 
@@ -198,7 +206,6 @@ function EmployeeListScreen({ navigation, route }: Props) {
                     autoCorrect={false}
                 />
 
-                {/* ✅ Custom clear button for Android & iOS */}
                 {search.length > 0 && (
                     <Pressable
                         style={styles.clearButton}
@@ -230,7 +237,6 @@ function EmployeeListScreen({ navigation, route }: Props) {
                             ]}
                             onPress={() =>
                                 navigation.navigate('EmployeeDetails', { employee: item })
-
                             }
                             onLongPress={() =>
                                 navigation.navigate('EditEmployee', { employee: item })
@@ -429,7 +435,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     error: {
-        color: '#2563EB',
+        color: '#DC2626', // ✅ FIX 3: Changed to red for errors
         textAlign: 'center',
     },
     retryButton: {

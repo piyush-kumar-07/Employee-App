@@ -35,7 +35,7 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
                             await deleteEmployee(employee.id);
 
                             navigation.navigate('EmployeeList', {
-                                deleteEmployee: employee.id,
+                                deletedEmployeeId: employee.id,
                             });
                         } catch (error) {
                             console.log('Delete employee error:', error);

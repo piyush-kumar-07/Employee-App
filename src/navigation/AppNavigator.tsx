@@ -9,15 +9,15 @@ import type { Employee } from '../types/employee';
 import EditEmployeeScreen from '../screens/employees/EditEmployeeScreen';
 import { deleteEmployee } from '../services/employeeServices';
 
-// ✅ 1. Define the types for navigation
+
 export type RootStackParamList = {
     EmployeeList: {
         newEmployee?: Employee;
         updatedEmployee?: Employee;
-        deleteEmployee?: number;
+        deletedEmployeeId?: number;
     } | undefined;
-    EmployeeDetails: { employee: Employee };
     AddEmployee: undefined;
+    EmployeeDetails: { employee: Employee };
     EditEmployee: { employee: Employee };
 };
 
