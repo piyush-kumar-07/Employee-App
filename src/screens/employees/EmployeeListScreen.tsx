@@ -41,18 +41,27 @@ function EmployeeListScreen({ navigation, route }: Props) {
             const data = await getEmployees();
 
             setEmployees(currentEmployees => {
+                const currentById = new Map(
+                    currentEmployees.map(employee => [employee.id, employee]),
+                );
+
+                const mergedEmployees = data.map(
+                    apiEmployee => currentById.get(apiEmployee.id) ?? apiEmployee,
+                );
+
                 const apiIds = new Set(data.map(employee => employee.id));
 
                 const locallyAddedEmployees = currentEmployees.filter(
                     employee => !apiIds.has(employee.id),
                 );
 
-                return [...locallyAddedEmployees, ...data];
+                return [...locallyAddedEmployees, ...mergedEmployees];
             });
         } catch (err) {
             if (axios.isAxiosError(err)) {
                 console.log('Employee API error:', err.message);
             }
+
             setError('Unable to load employees. Please try again.');
         } finally {
             setLoading(false);
@@ -64,29 +73,53 @@ function EmployeeListScreen({ navigation, route }: Props) {
         loadEmployees();
     }, [loadEmployees]);
 
-
     useEffect(() => {
         const newEmployee = route.params?.newEmployee;
+        const updatedEmployee = route.params?.updatedEmployee;
 
-        if (!newEmployee) {
-            return;
+        if (updatedEmployee) {
+            setEmployees(currentEmployees => {
+                const exists = currentEmployees.some(
+                    employee => employee.id === updatedEmployee.id,
+                );
+
+                if (exists) {
+                    return currentEmployees.map(employee =>
+                        employee.id === updatedEmployee.id
+                            ? updatedEmployee
+                            : employee,
+                    );
+                }
+
+                return [updatedEmployee, ...currentEmployees];
+            });
         }
 
-        setEmployees(currentEmployees => {
-            const alreadyExists = currentEmployees.some(
-                employee => employee.id === newEmployee.id
-            );
+        if (newEmployee) {
+            setEmployees(currentEmployees => {
+                const exists = currentEmployees.some(
+                    employee => employee.id === newEmployee.id,
+                );
 
-            if (alreadyExists) {
-                return currentEmployees;
-            }
+                return exists
+                    ? currentEmployees
+                    : [newEmployee, ...currentEmployees];
+            });
+        }
 
-            return [newEmployee, ...currentEmployees];
-        });
+        if (newEmployee || updatedEmployee) {
+            setSearch('');
 
-
-        navigation.setParams({ newEmployee: undefined });
-    }, [route.params?.newEmployee, navigation]);
+            navigation.setParams({
+                newEmployee: undefined,
+                updatedEmployee: undefined,
+            });
+        }
+    }, [
+        route.params?.newEmployee,
+        route.params?.updatedEmployee,
+        navigation,
+    ]);
 
     const query = search.trim().toLowerCase();
 
