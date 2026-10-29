@@ -7,12 +7,14 @@ import EmployeeDetailsScreen from '../screens/employees/EmployeeDetailsScreen';
 import AddEmployeeScreen from '../screens/employees/AddEmployeeScreen';
 import type { Employee } from '../types/employee';
 import EditEmployeeScreen from '../screens/employees/EditEmployeeScreen';
+import { deleteEmployee } from '../services/employeeServices';
 
 // ✅ 1. Define the types for navigation
 export type RootStackParamList = {
     EmployeeList: {
         newEmployee?: Employee;
         updatedEmployee?: Employee;
+        deleteEmployee?: number;
     } | undefined;
     EmployeeDetails: { employee: Employee };
     AddEmployee: undefined;

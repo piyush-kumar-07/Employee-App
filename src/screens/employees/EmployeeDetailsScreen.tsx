@@ -5,10 +5,12 @@ import {
     StyleSheet,
     ScrollView,
     Pressable,
+    Alert,
 } from 'react-native';
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/AppNavigator';
+import { deleteEmployee } from '../../services/employeeServices';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EmployeeDetails'>;
 
@@ -16,8 +18,43 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
     const { employee } = route.params;
     const [menuVisible, setMenuVisible] = useState(false);
 
+    const handleDelete = () => {
+        Alert.alert(
+            'Delete Employee',
+            `Are you sure you want to delete ${employee.firstName} ${employee.lastName}?`,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await deleteEmployee(employee.id);
+
+                            navigation.navigate('EmployeeList', {
+                                deleteEmployee: employee.id,
+                            });
+                        } catch (error) {
+                            console.log('Delete employee error:', error);
+
+                            Alert.alert(
+                                'Delete failed',
+                                'Unable to delete this employee. Please try again.',
+                            );
+                        }
+                    },
+                },
+            ],
+        );
+    };
+
     const initials =
         `${employee.firstName?.charAt(0) ?? ''}${employee.lastName?.charAt(0) ?? ''}`.toUpperCase();
+
+
 
     return (
         <ScrollView style={styles.container}>
@@ -31,6 +68,7 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
                     <Text style={styles.menuDots}>⋮</Text>
                 </Pressable>
 
+
                 {menuVisible && (
                     <View style={styles.menuDropdown}>
                         <Pressable
@@ -41,6 +79,18 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
                             }}
                         >
                             <Text style={styles.menuItemText}>Edit Employee</Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={styles.menuItem}
+                            onPress={() => {
+                                setMenuVisible(false);
+                                handleDelete();
+                            }}
+                        >
+                            <Text style={[styles.menuItemText, styles.deleteText]}>
+                                Delete Employee
+                            </Text>
                         </Pressable>
                     </View>
                 )}
@@ -79,9 +129,14 @@ function EmployeeDetailsScreen({ route, navigation }: Props) {
                 <Text style={styles.value}>{employee.company?.title ?? 'Not provided'}</Text>
             </View>
 
-            {/* ✅ Redundant button removed. The dropdown handles Edit now. */}
+
+
+
         </ScrollView>
+
+
     );
+
 }
 
 const styles = StyleSheet.create({
@@ -128,6 +183,9 @@ const styles = StyleSheet.create({
     menuItem: {
         paddingHorizontal: 16,
         paddingVertical: 14,
+    },
+    deleteText: {
+        color: '#f50606e3',
     },
     menuItemText: {
         fontSize: 14,
