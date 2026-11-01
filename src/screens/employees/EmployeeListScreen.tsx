@@ -23,7 +23,8 @@ function EmployeeListScreen({ navigation, route }: Props) {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState('');
-    const [search, setSearch] = useState(''); // ✅ FIX 1: Added missing search state
+    const [search, setSearch] = useState('');
+    const [deletedEmployeeIds, setDeletedEmployeeIds] = useState<number[]>([]);
 
     const loadEmployees = useCallback(async (isRefresh = false) => {
         try {
@@ -42,17 +43,19 @@ function EmployeeListScreen({ navigation, route }: Props) {
                     currentEmployees.map(employee => [employee.id, employee]),
                 );
 
-                const mergedEmployees = data.map(
-                    apiEmployee => currentById.get(apiEmployee.id) ?? apiEmployee,
-                );
+                const visibleApiEmployees = data
+                    .filter(employee => !deletedEmployeeIds.includes(employee.id))
+                    .map(employee => currentById.get(employee.id) ?? employee);
 
                 const apiIds = new Set(data.map(employee => employee.id));
 
                 const locallyAddedEmployees = currentEmployees.filter(
-                    employee => !apiIds.has(employee.id),
+                    employee =>
+                        !apiIds.has(employee.id) &&
+                        !deletedEmployeeIds.includes(employee.id),
                 );
 
-                return [...locallyAddedEmployees, ...mergedEmployees];
+                return [...locallyAddedEmployees, ...visibleApiEmployees];
             });
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -64,7 +67,7 @@ function EmployeeListScreen({ navigation, route }: Props) {
             setLoading(false);
             setRefreshing(false);
         }
-    }, []);
+    }, [deletedEmployeeIds]);
 
     useEffect(() => {
         loadEmployees();
@@ -76,6 +79,12 @@ function EmployeeListScreen({ navigation, route }: Props) {
         const deletedEmployeeId = route.params?.deletedEmployeeId;
 
         if (deletedEmployeeId !== undefined) {
+            setDeletedEmployeeIds(current =>
+                current.includes(deletedEmployeeId)
+                    ? current
+                    : [...current, deletedEmployeeId],
+            );
+
             setEmployees(currentEmployees =>
                 currentEmployees.filter(
                     employee => employee.id !== deletedEmployeeId,
