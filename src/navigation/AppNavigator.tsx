@@ -7,7 +7,7 @@ import EmployeeDetailsScreen from '../screens/employees/EmployeeDetailsScreen';
 import AddEmployeeScreen from '../screens/employees/AddEmployeeScreen';
 import type { Employee } from '../types/employee';
 import EditEmployeeScreen from '../screens/employees/EditEmployeeScreen';
-import { deleteEmployee } from '../services/employeeServices';
+
 
 
 export type RootStackParamList = {
